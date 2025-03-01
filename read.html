@@ -8,7 +8,7 @@
   <h1 id="remainingDays"></h1>
 
   <script>
-const boxdate = document.getElementById("day").value;
+const boxdate = localStorage.getItem("Value");
 const targetDate = new Date(boxdate);
 
 function calculateRemainingDays() {
