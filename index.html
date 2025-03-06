@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>残り日数を表示</title>
-  <style>
-    .example{overflow: hidden;}
-    .example p{margin: 0;}
-    .box{width: 8%;}
-  </style>
-</head>
-<body>
-  <div class="example">
-  <p>:行事名 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;:行事予定日</p>
-  <input type="text" placeholder="例:文化祭" id="name">&emsp;
-  &emsp;<input type="text" placeholder="例:2025/11/15" id="day">
-  <button type="button" onclick="send()">決定</button>
-  </div>
-  <script>
-    function send(){
-      const val = document.getElementById("day").value;
-      localStorage.setItem("day", val);
-      window.location.href = "https://mzkstk.github.io/site-set/read.html";
-    }
-  </script>
-</body>
+  <head>
+    <base target="_top">
+    <style>
+      .div{
+        background-color: rgba(86, 86, 86, 0); 
+      }
+    </style>
+  </head>
+  <body onload="callServerFunction()">
+    <div>
+      <h2 id="secondmes"></h2>
+      <h1 id="remainingDays"></h1>
+    </div>
+    <script>
+      function callServerFunction() {
+        google.script.run.withSuccessHandler(calculateRemainingDays).serverside();
+      }
+      function calculateRemainingDays(response) {
+        const targetDate = new Date(String(response))
+        const today = new Date();
+        const timeDifference = targetDate.getTime() - today.getTime();
+
+        if (timeDifference > 0) {
+          document.getElementById("secondmes").textContent = "次の行事まで残り";
+          const remainingDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+          document.getElementById("remainingDays").textContent = remainingDays + "日";
+        } else if(timeDifference == 0){
+          document.getElementById("secondmes").textContent = "";
+          document.getElementById("remainingDays").textContent = "当日になりました！";
+        } else{
+          document.getElementById("remainingDays").textContent = "";
+          document.getElementById("secondmes").textContent = "行事は終了しました。";
+        }
+      }
+
+      setInterval(callServerFunction,1000*60*60);
+    </script>
+  </body>
 </html>
